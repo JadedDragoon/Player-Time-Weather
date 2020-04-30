@@ -1,5 +1,7 @@
 package net.scrapironcity.ptw;
 
+import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.WeatherType;
@@ -9,67 +11,72 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandMain implements CommandExecutor {
+    Logger log=Bukkit.getLogger();
+    String prefix=ChatColor.GOLD + "" + ChatColor.BOLD + "PTW" + ChatColor.DARK_GRAY + " - " + ChatColor.RESET;
+
     @Override
     public boolean onCommand(CommandSender src, Command cmd, String label, String[] args) {
+		String flabel=label + (args.length > 0 ? " " + args[0] : "");
         if (src instanceof Player) {
+    		Player player = (Player) src;
         	try {
-        		Player player = (Player) src;
-            
         		String subc=args.length > 0 ? args[0] : "";
             
 	            switch(subc) {
 	            	case "tset" :
 	            		if (args.length < 2) {
-	            			player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You must specify a time value.");
+	            			player.sendMessage(prefix + ChatColor.RED + "You must specify a time value.");
+	                		player.chat("/help " + flabel);
 	            			break;
 	            		}
-	            		return this.setTime(player, args[1], false);
+	            		return this.setTime(player, args[1], false, flabel);
 	
 	            	case "rtset" :
 	            		if (args.length < 2) {
-	            			player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You must specify a time offset value.");
+	            			player.sendMessage(prefix + ChatColor.RED + "You must specify a time offset value.");
+	                		player.chat("/help " + flabel);
 	            			break;
 	            		}
-	            		return this.setTime(player, args[1], true);
+	            		return this.setTime(player, args[1], true, flabel);
 	            		
 	            	case "wset" :
 	            		if (args.length < 2 || (!args[1].equalsIgnoreCase("CLEAR") && !args[1].equalsIgnoreCase("DOWNFALL"))) {
-	            			player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You must specify DOWNFALL for rain/snow or CLEAR for no rain.");
+	            			player.sendMessage(prefix + ChatColor.RED + "You must specify DOWNFALL for rain/snow or CLEAR for no rain/snow.");
+	                		player.chat("/help " + flabel);
 	            			break;
 	            		}
-	            		return this.setWeather(player, args[1]);
+	            		return this.setWeather(player, args[1], flabel);
 	
 	            	case "tsync" :
-	            		return this.resetTime(player);
+	            		return this.resetTime(player, flabel);
 	            		
 	            	case "wsync" :
-	            		return this.resetWeather(player);
+	            		return this.resetWeather(player, flabel);
 	            		
 	            	case "sync":
-	            		return this.resetWeather(player) && this.resetTime(player);
+	            		return this.resetWeather(player, flabel) && this.resetTime(player, flabel);
 	            		
 	            	case "status" :
 	            	case "" :
-	            		return this.getStatus(player);
+	            		return this.getStatus(player, flabel);
 	
 	            	default :
-	                    player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Unkown command: " + subc);            		
+	                    player.sendMessage(prefix + ChatColor.RED + "Unkown command: " + subc);            		
 	            }
         	} catch (Exception e) {
-        		Bukkit.getLogger().warning("Failed parsing command in Player Time & Weather:");
-        		Bukkit.getLogger().warning("	" + e.getLocalizedMessage());
-        		
-        		return false;    		
+        		log.warning("Failed parsing command in Player Time & Weather:");
+        		log.warning("	" + e.toString());
+        		player.chat("/help " + flabel);
         	}
             
             return true;
         }
         
         src.sendMessage("Only players may use /ptw!");        
-        return false;
+        return true;
     }
     
-    private boolean getStatus(Player player) {
+    private boolean getStatus(Player player, String label) {
     	try {
 	    	String[] msg={
 	    		ChatColor.GOLD + "" + ChatColor.BOLD + "Player Weather" + ChatColor.DARK_GRAY + ":  " + ChatColor.RESET + (player.getPlayerWeather() != null ? ChatColor.GREEN + player.getPlayerWeather().toString() : ChatColor.AQUA + "Synced with server."),
@@ -79,68 +86,66 @@ public class CommandMain implements CommandExecutor {
 	    	player.sendMessage(msg);
 	    	
     	} catch (Exception e) {
-    		Bukkit.getLogger().warning("Unable to display status in Player Time & Weather:");
-    		Bukkit.getLogger().warning("	" + e.getLocalizedMessage());
-    		
-    		return false;
+    		log.warning("Unable to display status in Player Time & Weather:");
+    		log.warning("	" + e.toString());
+    		player.chat("/help " + label);
     	}
     	
     	return true;
     }
     
-    private boolean resetTime(Player player) {
+    private boolean resetTime(Player player, String label) {
     	try {
     		player.resetPlayerTime();
-    		player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Time Syncronized");
+    		player.sendMessage(prefix + ChatColor.AQUA + "Time Syncronized");
     	} catch (Exception e) {
-    		Bukkit.getLogger().warning("Unable to reset time in Player Time & Weather:");
-    		Bukkit.getLogger().warning("	" + e.getLocalizedMessage());
-    		
-    		return false;    		
+    		log.warning("Unable to reset time in Player Time & Weather:");
+    		log.warning("	" + e.toString());
+    		player.chat("/help " + label);
     	}
     	
     	return true;
     }
     
-    private boolean resetWeather(Player player) {
+    private boolean resetWeather(Player player, String label) {
     	try {
     		player.resetPlayerWeather();
-    		player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Weather Syncronized");
+    		player.sendMessage(prefix + ChatColor.AQUA + "Weather Syncronized");
     	} catch (Exception e) {
-    		Bukkit.getLogger().warning("Unable to reset weather in Player Time & Weather:");
-    		Bukkit.getLogger().warning("	" + e.getLocalizedMessage());
-    		
-    		return false;    		
+    		log.warning("Unable to reset weather in Player Time & Weather:");
+    		log.warning("	" + e.toString());
+    		player.chat("/help " + label);
     	}
     	
     	return true;
     }
     
-    private boolean setTime(Player player, String timeString, Boolean rel) {
+    private boolean setTime(Player player, String timeString, Boolean rel, String label) {
     	try {
     		player.setPlayerTime(Long.parseLong(timeString), rel);
-    		player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Personal Time Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + (player.isPlayerTimeRelative() ? "+" : "") + player.getPlayerTimeOffset());
+    		player.sendMessage(prefix + ChatColor.GREEN + "Personal Time Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + (player.isPlayerTimeRelative() ? "+" : "") + player.getPlayerTimeOffset());
+    	} catch (NumberFormatException e) {
+    		player.sendMessage(prefix + ChatColor.RED + timeString + " is not a valid time string.");
+    		player.chat("/help " + label);
     	} catch (Exception e) {
-    		Bukkit.getLogger().warning("Unable to set time in Player Time & Weather:");
-    		Bukkit.getLogger().warning("	" + e.getLocalizedMessage());
+    		log.warning("Unable to set time in Player Time & Weather:");
+    		log.warning("	" + e.toString());
     		player.resetPlayerTime();
-    		
-    		return false;    		
+    		player.chat("/help " + label);
     	}
     	
     	return true;
     }
     
-    private boolean setWeather(Player player, String weatherString) {
+    private boolean setWeather(Player player, String weatherString, String label) {
     	try {
     		player.setPlayerWeather(WeatherType.valueOf(weatherString.toUpperCase()));
-    		player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Personal Weather Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + player.getPlayerWeather());
+    		player.sendMessage(prefix + "" + ChatColor.GREEN + "Personal Weather Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + player.getPlayerWeather());
     	} catch (Exception e) {
-    		Bukkit.getLogger().warning("Unable to set weather in Player Time & Weather:");
-    		Bukkit.getLogger().warning("	" + e.getLocalizedMessage());
+    		log.warning("Unable to set weather in Player Time & Weather:");
+    		log.warning("	" + e.toString());
     		player.resetPlayerWeather();
-    		
-    		return false;    		
+    		player.chat("/help " + label);
     	}
     	
     	return true;
