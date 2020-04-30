@@ -17,11 +17,11 @@ Commands can only be used in-game by a player.
    
 ### /ptw tset
 **description**: Set your personal (apparent) time \
-**usage**: /ptw tset <time>
+**usage**: /ptw tset \<time\>
   
 ### /ptw rtset
 **description**: Set your relative personal (apparent) time \
-**usage**: /ptw rtset <time-offset>
+**usage**: /ptw rtset \<time-offset\>
   
 ### /ptw tsync
 **description**: Syncronize your personal (apparent) time with the server (actual) time. \
@@ -29,7 +29,7 @@ Commands can only be used in-game by a player.
 
 ### /ptw wset
 **description**: Set your personal (apparent) weather \
-**usage**: /ptw tset <CLEAR|DOWNFALL>
+**usage**: /ptw tset \<CLEAR|DOWNFALL\>
 
 ### /ptw wsync
 **description**: Syncronize your personal (apparent) weather with the server (actual) weather. \
