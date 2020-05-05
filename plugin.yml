@@ -1,7 +1,7 @@
 name: PlayerTimeWeather
 author: J Cliff Armstrong (A.K.A. JadedDragoon)
 main: net.scrapironcity.ptw.ptw
-version: 0.4.0
+version: 0.4.1
 api-version: 1.15
 description: For controlling the apparent time and weather of a player without affecting other players or the server (actual) time and weather.
 prefix: PTW
