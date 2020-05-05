@@ -7,7 +7,7 @@ description: For controlling the apparent time and weather of a player without a
 prefix: PTW
 commands:
    ptw:
-      description: Alias to /pts status.
+      description: Alias to /ptw status.
       usage: "Usage: /ptw"
    ptw status:
       description: View your current Player Time & Weather status.
@@ -23,10 +23,10 @@ commands:
       usage: "Usage: /ptw tsync"
    ptw wset:
       description: Set your personal (apparent) weather.
-      usage: "Usage: /ptw tset <CLEAR|DOWNFALL>"
+      usage: "Usage: /ptw wset <CLEAR|DOWNFALL>"
    ptw wsync:
       description: Synchronize your personal (apparent) weather with the server (actual) weather.
-      usage: "Usage: /ptw tsync"
+      usage: "Usage: /ptw wsync"
    ptw sync:
       description: Synchronize both your personal time and weather with the server.
       usage: "Usage: /ptw sync"
