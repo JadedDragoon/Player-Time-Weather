@@ -1,5 +1,7 @@
 package net.scrapironcity.ptw;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -13,12 +15,14 @@ import org.bukkit.entity.Player;
 public class CommandMain implements CommandExecutor {
     Logger log=Bukkit.getLogger();
     String prefix=ChatColor.GOLD + "" + ChatColor.BOLD + "PTW" + ChatColor.DARK_GRAY + " - " + ChatColor.RESET;
-
+    double multiplier = 1000/(double) 60;
+    
     @Override
     public boolean onCommand(CommandSender src, Command cmd, String label, String[] args) {
 		String flabel=label + (args.length > 0 ? " " + args[0] : "");
         if (src instanceof Player) {
     		Player player = (Player) src;
+    		boolean success = true; 
         	try {
         		String subc=args.length > 0 ? args[0] : "";
             
@@ -26,49 +30,59 @@ public class CommandMain implements CommandExecutor {
 	            	case "tset" :
 	            		if (args.length < 2) {
 	            			player.sendMessage(prefix + ChatColor.RED + "You must specify a time value.");
-	                		player.chat("/help " + flabel);
+	                		success = false;
 	            			break;
 	            		}
-	            		return this.setTime(player, args[1], false, flabel);
+	            		success = this.setTime(player, args[1], false);
+	            		break;
 	
 	            	case "rtset" :
 	            		if (args.length < 2) {
 	            			player.sendMessage(prefix + ChatColor.RED + "You must specify a time offset value.");
-	                		player.chat("/help " + flabel);
+	                		success = false;
 	            			break;
-	            		}
-	            		return this.setTime(player, args[1], true, flabel);
+	            		}	            		
+            			success = this.setTime(player, args[1], true);
+            			break;
 	            		
 	            	case "wset" :
 	            		if (args.length < 2 || (!args[1].equalsIgnoreCase("CLEAR") && !args[1].equalsIgnoreCase("DOWNFALL"))) {
 	            			player.sendMessage(prefix + ChatColor.RED + "You must specify DOWNFALL for rain/snow or CLEAR for no rain/snow.");
-	                		player.chat("/help " + flabel);
+	                		success = false;
 	            			break;
 	            		}
-	            		return this.setWeather(player, args[1], flabel);
+	            		success = this.setWeather(player, args[1]);
+	            		break;
 	
 	            	case "tsync" :
-	            		return this.resetTime(player, flabel);
+	            		success = this.resetTime(player);
+	            		break;
 	            		
 	            	case "wsync" :
-	            		return this.resetWeather(player, flabel);
+	            		success = this.resetWeather(player);
+	            		break;
 	            		
 	            	case "sync":
-	            		return this.resetWeather(player, flabel) && this.resetTime(player, flabel);
+	            		success = this.resetWeather(player) && this.resetTime(player);
+	            		break;
 	            		
 	            	case "status" :
 	            	case "" :
-	            		return this.getStatus(player, flabel);
+	            		success = this.getStatus(player);
+	            		break;
 	
 	            	default :
-	                    player.sendMessage(prefix + ChatColor.RED + "Unkown command: " + subc);            		
+	                    player.sendMessage(prefix + ChatColor.RED + "Unkown command: " + subc);
+	            		player.chat("/help PlayerTimeWeather");
 	            }
         	} catch (Exception e) {
         		log.warning("Failed parsing command in Player Time & Weather:");
         		log.warning("	" + e.toString());
-        		player.chat("/help " + flabel);
+        		success = false;
         	}
             
+        	if (!success) player.chat("/help " + flabel);
+        	
             return true;
         }
         
@@ -76,7 +90,7 @@ public class CommandMain implements CommandExecutor {
         return true;
     }
     
-    private boolean getStatus(Player player, String label) {
+    private boolean getStatus(Player player) {
     	try {
 	    	String[] msg={
 	    		ChatColor.GOLD + "" + ChatColor.BOLD + "Player Weather" + ChatColor.DARK_GRAY + ":  " + ChatColor.RESET + (player.getPlayerWeather() != null ? ChatColor.GREEN + player.getPlayerWeather().toString() : ChatColor.AQUA + "Synced with server."),
@@ -88,56 +102,69 @@ public class CommandMain implements CommandExecutor {
     	} catch (Exception e) {
     		log.warning("Unable to display status in Player Time & Weather:");
     		log.warning("	" + e.toString());
-    		player.chat("/help " + label);
+    		return false;
     	}
     	
     	return true;
     }
     
-    private boolean resetTime(Player player, String label) {
+    private boolean resetTime(Player player) {
     	try {
     		player.resetPlayerTime();
     		player.sendMessage(prefix + ChatColor.AQUA + "Time Syncronized");
     	} catch (Exception e) {
     		log.warning("Unable to reset time in Player Time & Weather:");
     		log.warning("	" + e.toString());
-    		player.chat("/help " + label);
+    		return false;
     	}
     	
     	return true;
     }
     
-    private boolean resetWeather(Player player, String label) {
+    private boolean resetWeather(Player player) {
     	try {
     		player.resetPlayerWeather();
     		player.sendMessage(prefix + ChatColor.AQUA + "Weather Syncronized");
     	} catch (Exception e) {
     		log.warning("Unable to reset weather in Player Time & Weather:");
     		log.warning("	" + e.toString());
-    		player.chat("/help " + label);
+    		return false;
     	}
     	
     	return true;
     }
     
-    private boolean setTime(Player player, String timeString, Boolean rel, String label) {
+    private boolean setTime(Player player, String timeString, Boolean rel) {
     	try {
-    		player.setPlayerTime(Long.parseLong(timeString), rel);
-    		player.sendMessage(prefix + ChatColor.GREEN + "Personal Time Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + (player.isPlayerTimeRelative() ? "+" : "") + player.getPlayerTimeOffset());
+    		// do any available conversions
+    		long ticks;
+    		if (timeString.matches("^\\d{1,2}:\\d\\d$")) {
+    			ticks = this.timeToTicks(timeString, rel, player.getWorld().getTime());
+
+    		} else if (timeString.matches("^[a-zA-Z]+$")) {
+    			ticks = this.eventToTicks(timeString, rel, player.getWorld().getTime());
+    		
+    		} else if (timeString.matches("^\\d+$")) {
+    			ticks = Long.parseLong(timeString);
+    		
+    		} else { throw new IllegalArgumentException("invalid time string"); }
+    		
+    		player.setPlayerTime(ticks, rel);
+    		player.sendMessage(prefix + ChatColor.GREEN + "Personal " + (player.isPlayerTimeRelative() ? "Relative " : "") + "Time Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + player.getPlayerTimeOffset());
     	} catch (NumberFormatException e) {
     		player.sendMessage(prefix + ChatColor.RED + timeString + " is not a valid time string.");
-    		player.chat("/help " + label);
+    		return false;
     	} catch (Exception e) {
     		log.warning("Unable to set time in Player Time & Weather:");
     		log.warning("	" + e.toString());
     		player.resetPlayerTime();
-    		player.chat("/help " + label);
+    		return false;
     	}
     	
     	return true;
     }
     
-    private boolean setWeather(Player player, String weatherString, String label) {
+    private boolean setWeather(Player player, String weatherString) {
     	try {
     		player.setPlayerWeather(WeatherType.valueOf(weatherString.toUpperCase()));
     		player.sendMessage(prefix + "" + ChatColor.GREEN + "Personal Weather Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + player.getPlayerWeather());
@@ -145,9 +172,79 @@ public class CommandMain implements CommandExecutor {
     		log.warning("Unable to set weather in Player Time & Weather:");
     		log.warning("	" + e.toString());
     		player.resetPlayerWeather();
-    		player.chat("/help " + label);
+    		return false;
     	}
     	
     	return true;
+    }
+    
+    private long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    	long outp;
+    	int length = timeString.split(":").length;
+    	
+    	//declare and initialize t (array of bytes holding different each unit of time).
+    	long[] time = new long[length];
+    	for (int i=length; i>0; i--) {
+    		long current = Long.valueOf(timeString.split(":")[i-1]);
+    		if (current > 60 || current < 0)
+    			throw new IllegalArgumentException("value out of bounds");
+    		
+    		time[i-1] = current;
+    	}
+
+    	/*
+    	 * 1 element = hour
+    	 * 2 element = hour:minute
+    	 */
+    	long ticks;
+    	switch (length) {
+    		case 1:
+    			ticks = Math.round((time[0]*60)*multiplier);
+    			break;
+    		case 2:
+    			ticks = Math.round(((time[0]*60)+time[1])*multiplier);
+    			break;
+    		default:
+    			throw new IllegalArgumentException("invalid time format");
+    	}
+    	
+    	if (ticks >= 6000) {
+    		ticks = ticks - 6000;
+    	} else {
+    		ticks = ticks + 18000;
+    	}
+    	
+		if (relative) {
+	    	outp = ticks - wTicks;
+	    } else {
+	    	outp = ticks;
+	    }
+    	
+    	return outp;
+    }
+    
+    private long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    	long outp;
+    	
+    	@SuppressWarnings("serial")
+		Map<String, Long> eventMap = new HashMap<String, Long>() {{;
+	    	put("sunrise", 	(long) 23000);
+	    	put("morning", 	(long)     0);
+	    	put("day", 		(long)  1000);
+	    	put("noon", 	(long)  6000);
+	    	put("sunset", 	(long) 12000);
+	    	put("night", 	(long) 13000);
+	    	put("midnight", (long) 18000);
+	    }};
+	    
+		if (!eventMap.containsKey(event)) throw new IllegalArgumentException("unknown event");
+	    
+		if (relative) {
+	    	outp = eventMap.get(event) - wTicks;
+	    } else {
+	    	outp = eventMap.get(event);
+	    }
+    	
+    	return outp;
     }
 }
