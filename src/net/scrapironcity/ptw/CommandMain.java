@@ -178,7 +178,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    private static long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
     	long outp;
     	int length = timeString.split(":").length;
     	
@@ -223,7 +223,7 @@ public class CommandMain implements CommandExecutor {
     	return outp;
     }
     
-    private long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    private static long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
     	long outp;
     	
     	@SuppressWarnings("serial")
