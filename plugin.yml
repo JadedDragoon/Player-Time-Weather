@@ -6,27 +6,27 @@ api-version: 1.15
 description: For controlling the apparent time and weather of a player without affecting other players or the server (actual) time and weather.
 prefix: PTW
 commands:
-   ptw:
-      description: Alias to /ptw status.
-      usage: "Usage: /ptw"
-   ptw status:
-      description: View your current Player Time & Weather status.
-      usage: "Usage: /ptw status"
-   ptw tset:
-      description: Set your personal (apparent) time. Locks time.         
-      usage: "Usage: /ptw tset <time>\n\n<time> may be:\n     - a number of game ticks between 0 and 24000\n     - a 24-hour formated time between 00:00 and 24:00\n     - a time period name such as morning, day, noon, or night\n\nFor more information visit: https://tinyurl.com/ybl2m9n8"
-   ptw rtset:
-      description: Set your relative personal (apparent) time. Does not lock time.     
-      usage: "Usage: /ptw rtset <time-offset>\n\n<time-offset> has the same format as <time> in /ptw tset except event names and 24-hour time values will set relative time so the result is the desired time while game ticks will adjust the relative time by the specified number of ticks."
-   ptw tsync:
-      description: Synchronize your personal (apparent) time with the server (actual) time.
-      usage: "Usage: /ptw tsync"
-   ptw wset:
-      description: Set your personal (apparent) weather.
-      usage: "Usage: /ptw wset <CLEAR|DOWNFALL>"
-   ptw wsync:
-      description: Synchronize your personal (apparent) weather with the server (actual) weather.
-      usage: "Usage: /ptw wsync"
-   ptw sync:
-      description: Synchronize both your personal time and weather with the server.
-      usage: "Usage: /ptw sync"
+  ptw:
+    description: Alias to /ptw status.
+    usage: "Usage: /ptw"
+  ptw status:
+    description: View your current Player Time & Weather status.
+    usage: "Usage: /ptw status"
+  ptw tset:
+    description: Set your personal (apparent) time. Locks time.         
+    usage: "Usage: /ptw tset <time>\n\n<time> may be:\n     - a number of game ticks between 0 and 24000\n     - a 24-hour formated time between 00:00 and 24:00\n     - a time period name such as morning, day, noon, or night\n\nFor more information visit: https://tinyurl.com/ybl2m9n8"
+  ptw rtset:
+    description: Set your relative personal (apparent) time. Does not lock time.     
+    usage: "Usage: /ptw rtset <time-offset>\n\n<time-offset> has the same format as <time> in /ptw tset except event names and 24-hour time values will set relative time so the result is the desired time while game ticks will adjust the relative time by the specified number of ticks."
+  ptw tsync:
+    description: Synchronize your personal (apparent) time with the server (actual) time.
+    usage: "Usage: /ptw tsync"
+  ptw wset:
+    description: Set your personal (apparent) weather.
+    usage: "Usage: /ptw wset <CLEAR|DOWNFALL>"
+  ptw wsync:
+    description: Synchronize your personal (apparent) weather with the server (actual) weather.
+    usage: "Usage: /ptw wsync"
+  ptw sync:
+    description: Synchronize both your personal time and weather with the server.
+    usage: "Usage: /ptw sync"
