@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandMain implements CommandExecutor {
-    Logger log=Bukkit.getLogger();
-    String prefix=ChatColor.GOLD + "" + ChatColor.BOLD + "PTW" + ChatColor.DARK_GRAY + " - " + ChatColor.RESET;
-    double multiplier = 1000/(double) 60;
+    private static Logger log=Bukkit.getLogger();
+    private static String prefix=ChatColor.GOLD + "" + ChatColor.BOLD + "PTW" + ChatColor.DARK_GRAY + " - " + ChatColor.RESET;
+    private static double multiplier = 1000/(double) 60;
     
     @Override
     public boolean onCommand(CommandSender src, Command cmd, String label, String[] args) {
@@ -33,7 +33,7 @@ public class CommandMain implements CommandExecutor {
 	                		success = false;
 	            			break;
 	            		}
-	            		success = this.setTime(player, args[1], false);
+	            		success = setTime(player, args[1], false);
 	            		break;
 	
 	            	case "rtset" :
@@ -42,7 +42,7 @@ public class CommandMain implements CommandExecutor {
 	                		success = false;
 	            			break;
 	            		}	            		
-            			success = this.setTime(player, args[1], true);
+            			success = setTime(player, args[1], true);
             			break;
 	            		
 	            	case "wset" :
@@ -51,24 +51,24 @@ public class CommandMain implements CommandExecutor {
 	                		success = false;
 	            			break;
 	            		}
-	            		success = this.setWeather(player, args[1]);
+	            		success = setWeather(player, args[1]);
 	            		break;
 	
 	            	case "tsync" :
-	            		success = this.resetTime(player);
+	            		success = resetTime(player);
 	            		break;
 	            		
 	            	case "wsync" :
-	            		success = this.resetWeather(player);
+	            		success = resetWeather(player);
 	            		break;
 	            		
 	            	case "sync":
-	            		success = this.resetWeather(player) && this.resetTime(player);
+	            		success = resetWeather(player) && resetTime(player);
 	            		break;
 	            		
 	            	case "status" :
 	            	case "" :
-	            		success = this.getStatus(player);
+	            		success = getStatus(player);
 	            		break;
 	
 	            	default :
@@ -90,7 +90,7 @@ public class CommandMain implements CommandExecutor {
         return true;
     }
     
-    private boolean getStatus(Player player) {
+    public static boolean getStatus(Player player) {
     	try {
 	    	String[] msg={
 	    		ChatColor.GOLD + "" + ChatColor.BOLD + "Player Weather" + ChatColor.DARK_GRAY + ":  " + ChatColor.RESET + (player.getPlayerWeather() != null ? ChatColor.GREEN + player.getPlayerWeather().toString() : ChatColor.AQUA + "Synced with server."),
@@ -108,7 +108,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private boolean resetTime(Player player) {
+    public static boolean resetTime(Player player) {
     	try {
     		player.resetPlayerTime();
     		player.sendMessage(prefix + ChatColor.AQUA + "Time Syncronized");
@@ -121,7 +121,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private boolean resetWeather(Player player) {
+    public static boolean resetWeather(Player player) {
     	try {
     		player.resetPlayerWeather();
     		player.sendMessage(prefix + ChatColor.AQUA + "Weather Syncronized");
@@ -134,15 +134,15 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private boolean setTime(Player player, String timeString, Boolean rel) {
+    public static boolean setTime(Player player, String timeString, Boolean rel) {
     	try {
     		// do any available conversions
     		long ticks;
     		if (timeString.matches("^\\d{1,2}:\\d\\d$")) {
-    			ticks = this.timeToTicks(timeString, rel, player.getWorld().getTime());
+    			ticks = timeToTicks(timeString, rel, player.getWorld().getTime());
 
     		} else if (timeString.matches("^[a-zA-Z]+$")) {
-    			ticks = this.eventToTicks(timeString, rel, player.getWorld().getTime());
+    			ticks = eventToTicks(timeString, rel, player.getWorld().getTime());
     		
     		} else if (timeString.matches("^\\d+$")) {
     			ticks = Long.parseLong(timeString);
@@ -164,7 +164,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private boolean setWeather(Player player, String weatherString) {
+    public static boolean setWeather(Player player, String weatherString) {
     	try {
     		player.setPlayerWeather(WeatherType.valueOf(weatherString.toUpperCase()));
     		player.sendMessage(prefix + "" + ChatColor.GREEN + "Personal Weather Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + player.getPlayerWeather());
@@ -178,7 +178,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    private static long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
     	long outp;
     	int length = timeString.split(":").length;
     	
@@ -223,7 +223,7 @@ public class CommandMain implements CommandExecutor {
     	return outp;
     }
     
-    private long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    private static long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
     	long outp;
     	
     	@SuppressWarnings("serial")
