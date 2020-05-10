@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandMain implements CommandExecutor {
-    private static Logger log=Bukkit.getLogger();
-    private static String prefix=ChatColor.GOLD + "" + ChatColor.BOLD + "PTW" + ChatColor.DARK_GRAY + " - " + ChatColor.RESET;
-    private static double multiplier = 1000/(double) 60;
+    private Logger log=Bukkit.getLogger();
+    private String prefix=ChatColor.GOLD + "" + ChatColor.BOLD + "PTW" + ChatColor.DARK_GRAY + " - " + ChatColor.RESET;
+    private double multiplier = 1000/(double) 60;
     
     @Override
     public boolean onCommand(CommandSender src, Command cmd, String label, String[] args) {
@@ -90,7 +90,7 @@ public class CommandMain implements CommandExecutor {
         return true;
     }
     
-    public static boolean getStatus(Player player) {
+    public boolean getStatus(Player player) {
     	try {
 	    	String[] msg={
 	    		ChatColor.GOLD + "" + ChatColor.BOLD + "Player Weather" + ChatColor.DARK_GRAY + ":  " + ChatColor.RESET + (player.getPlayerWeather() != null ? ChatColor.GREEN + player.getPlayerWeather().toString() : ChatColor.AQUA + "Synced with server."),
@@ -108,7 +108,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    public static boolean resetTime(Player player) {
+    public boolean resetTime(Player player) {
     	try {
     		player.resetPlayerTime();
     		player.sendMessage(prefix + ChatColor.AQUA + "Time Syncronized");
@@ -121,7 +121,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    public static boolean resetWeather(Player player) {
+    public boolean resetWeather(Player player) {
     	try {
     		player.resetPlayerWeather();
     		player.sendMessage(prefix + ChatColor.AQUA + "Weather Syncronized");
@@ -134,7 +134,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    public static boolean setTime(Player player, String timeString, Boolean rel) {
+    public boolean setTime(Player player, String timeString, Boolean rel) {
     	try {
     		// do any available conversions
     		long ticks;
@@ -164,7 +164,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    public static boolean setWeather(Player player, String weatherString) {
+    public boolean setWeather(Player player, String weatherString) {
     	try {
     		player.setPlayerWeather(WeatherType.valueOf(weatherString.toUpperCase()));
     		player.sendMessage(prefix + "" + ChatColor.GREEN + "Personal Weather Set" + ChatColor.DARK_GRAY + ": " + ChatColor.RESET + player.getPlayerWeather());
@@ -178,7 +178,7 @@ public class CommandMain implements CommandExecutor {
     	return true;
     }
     
-    private static long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    private long timeToTicks(String timeString, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
     	long outp;
     	int length = timeString.split(":").length;
     	
@@ -209,9 +209,9 @@ public class CommandMain implements CommandExecutor {
     	}
     	
     	if (ticks >= 6000) {
-    		ticks = ticks - 6000;
+    		ticks -= 6000;
     	} else {
-    		ticks = ticks + 18000;
+    		ticks += 18000;
     	}
     	
 		if (relative) {
@@ -223,7 +223,7 @@ public class CommandMain implements CommandExecutor {
     	return outp;
     }
     
-    private static long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
+    private long eventToTicks(String event, boolean relative, long wTicks) throws IllegalArgumentException, NumberFormatException {
     	long outp;
     	
     	@SuppressWarnings("serial")
