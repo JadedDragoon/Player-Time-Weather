@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PTWMain extends JavaPlugin {
-	private Listener worldChangeListener = new WorldChangeListener();
+	private Listener worldChangeListener = new PTWWorldChangeListener();
 
 	@Override
 	public void onLoad() {
