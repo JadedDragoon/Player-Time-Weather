@@ -10,15 +10,15 @@ public class PTWMain extends JavaPlugin {
 	@Override
 	public void onLoad() {
 	}
-	
-    @Override
-    public void onEnable() {
-    	this.getCommand("ptw").setExecutor(new PTWCommand());
-    	getServer().getPluginManager().registerEvents(worldChangeListener, this);
-    }
-    
-    @Override
-    public void onDisable() {
-    	HandlerList.unregisterAll(worldChangeListener);
-    }
+
+	@Override
+	public void onEnable() {
+		this.getCommand("ptw").setExecutor(new PTWCommand());
+		getServer().getPluginManager().registerEvents(worldChangeListener, this);
+	}
+
+	@Override
+	public void onDisable() {
+		HandlerList.unregisterAll(worldChangeListener);
+	}
 }
