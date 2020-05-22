@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/home/wolferz/spigotdev/Spigot/Spigot-API/target/spigot-api-1.15.2-R0.1-SNAPSHOT-shaded.jar"/>
+	<classpathentry kind="lib" path="/media/sf_Shared/Apps/Portable/spigot/1.13.2/spigot-api-1.13.2-R0.1-SNAPSHOT-shaded.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
